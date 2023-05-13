@@ -1,3 +1,4 @@
+
 import { Schema, model } from 'mongoose';
 
 const Trip = new Schema(
@@ -48,3 +49,4 @@ const Trip = new Schema(
 // });
 
 export default model('Trip', Trip);
+
