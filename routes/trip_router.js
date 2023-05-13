@@ -12,15 +12,15 @@ import {
 router.get('/', getAllTrips);
 
 // get trip by id
-router.get('/', getTripByID);
+router.get('/:id', getTripByID);
 
 // add trip
 router.post('/', createTrip);
 
 // update trip
-router.put('/', updateTrip);
+router.put('/:id', updateTrip);
 
 // delete trip
-router.delete('/', deleteTrip);
+router.delete('/:id', deleteTrip);
 
 export default router;
