@@ -12,8 +12,13 @@ const User = new Schema(
 			type: String,
 			required: true,
 		},
-		number: {
-			type: Number,
+		phone: {
+			type: String,
+			required: true,
+			unique: true,
+		},
+		password: {
+			type: String,
 			required: true,
 		},
 		image: {
