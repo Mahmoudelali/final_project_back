@@ -103,22 +103,26 @@ export async function login(req, res, next) {
 			.json({ success: false, message: 'All inputs are required' });
 	}
 
-	User.findOne({ phone }).then((response) => {
-		if (response && bcrypt.compare(password, response.password)) {
-			const token = jwt.sign(
-				{
-					phone: response.phone,
-				},
-				process.env.TOKEN_KEY,
-				{ expiresIn: '24h' },
-			);
-			response.password = undefined;
-			return res.status(200).json({ sucess: true, response, token });
-		} else {
-			res.status(400).json({
-				sucess: false,
-				err: 'Invalid Credentials',
-			});
-		}
-	});
+	User.findOne({ phone })
+		.then((response) => {
+			if (response && bcrypt.compare(password, response.password)) {
+				const token = jwt.sign(
+					{
+						phone: response.phone,
+					},
+					process.env.TOKEN_KEY,
+					{ expiresIn: '24h' },
+				);
+				response.password = undefined;
+				return res.status(200).json({ sucess: true, response, token });
+			} else {
+				res.status(400).json({
+					sucess: false,
+					err: 'Invalid Credentials',
+				});
+			}
+		})
+		.catch((err) => {
+			console.log(err.message);
+		});
 }
