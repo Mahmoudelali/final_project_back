@@ -1,4 +1,4 @@
-import mongoose, { Schema, model } from 'mongoose';
+import { Schema, model } from 'mongoose';
 
 const User = new Schema(
 	{
@@ -12,27 +12,28 @@ const User = new Schema(
 			type: String,
 			required: true,
 		},
-		number: {
-			type: Number,
+		phone: {
+			type: String,
+			required: true,
+			unique: true,
+		},
+		password: {
+			type: String,
 			required: true,
 		},
 		image: {
 			type: String,
 		},
 		joined_trips: {
-			type: Number,
-			required: true,
-			default: 0,
+			type: Object,
 		},
-		hosted_trips: {
-			type: Number,
-			required: true,
-			default: 0,
-		},
+		hosted_trips: [
+			{
+				type: Object,
+			},
+		],
 	},
-	{
-		collection: 'Users',
-	},
+	{ Collection: 'Users' },
 );
 
 export default model('User', User);

@@ -4,11 +4,13 @@ import morgan from 'morgan';
 import cookieParser from 'cookie-parser';
 import cors from 'cors';
 import connectToDatabase from './DataBase/dataBase.js';
+
 import userRouter from './routes/user_routes.js';
+import tripsRouter from './routes/trip_router.js';
 
 dotenv.config();
 
-const PORT = process.env.PORT || 5000;
+const PORT = process.env.PORT || 3000;
 
 const app = new express();
 
@@ -36,3 +38,4 @@ app.get('/', (req, res) => {
 });
 
 app.use('/api/user', userRouter);
+app.use('/api/trips', tripsRouter);
