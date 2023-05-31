@@ -25,15 +25,13 @@ const User = new Schema(
 			type: String,
 		},
 		joined_trips: {
-			type: Number,
-			required: true,
-			default: 0,
+			type: Object,
 		},
-		hosted_trips: {
-			type: Number,
-			required: true,
-			default: 0,
-		},
+		hosted_trips: [
+			{
+				type: Object,
+			},
+		],
 	},
 	{ Collection: 'Users' },
 );

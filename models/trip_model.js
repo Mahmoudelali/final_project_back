@@ -15,12 +15,10 @@ const Trip = new Schema(
 			type: [Schema.Types.ObjectId],
 			ref: 'User',
 		},
-		approvedPassengers: [
-			{
-				type: Schema.Types.ObjectId,
-				ref: 'User',
-			},
-		],
+		approvedPassengers: {
+			type: [Schema.Types.ObjectId],
+			ref: 'User',
+		},
 		start_location: {
 			type: String,
 			required: true,
@@ -61,22 +59,9 @@ const Trip = new Schema(
 	},
 	{
 		collection: 'Trips',
+		timestamps: true,
 	},
 );
 Trip.index({ host_name: 1 }, { unique: false });
-
-// Trip.pre(
-// 	[
-// 		'find',
-// 		'findOne',
-// 		'create',
-// 		'save',
-// 		'findOneAndUpdate',
-// 		'findOneAndDelete',
-// 	],
-// 	function () {
-// 		this.populate(['host_name', 'passengers']);
-// 	},
-// );
 
 export default model('Trip', Trip);

@@ -26,22 +26,30 @@ export const getAllTrips = (req, res) => {
 // get pending request
 export const getAllPendings = (req, res) => {
 	//trip id
-	const { id } = req.params;
+	try {
+		const { id } = req.params;
 
-	Trip.findById(id)
-		.populate('passengers')
-		.populate('approvedPassengers')
-		.then((trip) => {
-			const pendingRequests = trip.passengers.filter(
-				(passenger) => !trip.approvedPassengers.includes(passenger._id),
-			);
-			res.json(pendingRequests);
-		})
-		.catch((err) => {
-			res.status(500).json({
-				error: err.messsage,
+		Trip.findById(id)
+			.populate('passengers')
+			.populate('approvedPassengers')
+			.then((trip) => {
+				if (!trip) {
+					return res.json({ message: 'Trip not found' });
+				}
+				const pendingRequests = trip.passengers.filter(
+					(passenger) =>
+						!trip.approvedPassengers.includes(passenger._id),
+				);
+				res.json(pendingRequests);
+			})
+			.catch((err) => {
+				res.status(500).json({
+					error: err.messsage,
+				});
 			});
-		});
+	} catch (error) {
+		console.log(error.message);
+	}
 };
 //get  by id
 export const getTripByID = (req, res) => {
@@ -61,15 +69,27 @@ export const getTripByID = (req, res) => {
 	}
 };
 //new Trip
-export const createTrip = (req, res) => {
+export const createTrip = async (req, res) => {
 	try {
+		const { host_name } = req.body;
+
 		Trip.create(req.body)
-			.then((response) => {
+			.then(async (response) => {
+				const host = await User.updateOne(
+					{ _id: host_name },
+					{ $push: { hosted_trips: response } },
+				).then((res) => {
+					{
+						console.log(res);
+					}
+				});
+
 				return res
 					.status(200)
 					.json({ message: 'Success', trip: response });
 			})
 			.catch((err) => {
+				console.log(err);
 				return res.status(500).json({ message: err.message });
 			});
 	} catch (error) {
@@ -140,34 +160,40 @@ export const approvePassenger = async (req, res) => {
 
 	// passenger id
 	const { passengerId } = req.body;
-	const trip = await Trip.findOne({ _id: id });
+	const passengerAvailable = await Trip.findOne({ _id: req.params.id })
+		.passengers;
 
-	Trip.findByIdAndUpdate(
-		req.params.id,
-		{
-			$pull: { passengers: passengerId },
-			$push: { approvedPassengers: passengerId },
-			$inc: { seats: -1 },
-		},
-		{ new: true },
-	)
-		.then((trip) => {
-			if (!trip) {
-				return res.status(404).json({
-					success: false,
-					message: 'could not find trip',
-				});
-			} else {
-				console.log(trip.approvedPassengers);
-				return res.json({
-					success: true,
-					trip,	
-				});
-			}
-		})
-		.catch((err) => {
-			return res.status(500).json({ error: err.message });
-		});
+	if (!passengerAvailable) {
+		return res.json({ status: 404, message: 'Passenger not found' });
+	} else {
+		console.log(passengerAvailable);
+		await Trip.updateOne(
+			{ _id: id },
+			{
+				$pull: { passengers: passengerId },
+				$push: { approvedPassengers: passengerId },
+				$inc: { seats: -1 },
+			},
+			{ new: true },
+		)
+			.then((trip) => {
+				if (!trip) {
+					return res.status(404).json({
+						success: false,
+						message: 'could not find trip',
+					});
+				} else {
+					console.log(trip.approvedPassengers);
+					return res.json({
+						success: true,
+						trip,
+					});
+				}
+			})
+			.catch((err) => {
+				return res.status(500).json({ error: err.message });
+			});
+	}
 };
 
 export const search = (req, res) => {
