@@ -95,34 +95,30 @@ export const getUserById = (req, res) => {
 
 // user login
 export async function login(req, res, next) {
-	try {
-		let { password, phone } = req.body;
+	let { password, phone } = req.body;
 
-		if (!phone || !password) {
-			return res
-				.status(400)
-				.json({ success: false, message: 'All inputs are required' });
-		}
-
-		User.findOne({ phone }).then((response) => {
-			if (response && bcrypt.compare(password, response.password)) {
-				const token = jwt.sign(
-					{
-						phone: response.phone,
-					},
-					process.env.TOKEN_KEY,
-					{ expiresIn: '24h' },
-				);
-				response.password = undefined;
-				return res.status(200).json({ sucess: true, response, token });
-			} else {
-				res.status(400).json({
-					sucess: false,
-					err: 'Invalid Credentials',
-				});
-			}
-		});
-	} catch (err) {
-		return next(err);
+	if (!phone || !password) {
+		return res
+			.status(400)
+			.json({ success: false, message: 'All inputs are required' });
 	}
+
+	User.findOne({ phone }).then((response) => {
+		if (response && bcrypt.compare(password, response.password)) {
+			const token = jwt.sign(
+				{
+					phone: response.phone,
+				},
+				process.env.TOKEN_KEY,
+				{ expiresIn: '24h' },
+			);
+			response.password = undefined;
+			return res.status(200).json({ sucess: true, response, token });
+		} else {
+			res.status(400).json({
+				sucess: false,
+				err: 'Invalid Credentials',
+			});
+		}
+	});
 }
