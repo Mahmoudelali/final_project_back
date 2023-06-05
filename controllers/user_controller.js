@@ -56,7 +56,7 @@ export const modifyUser = async (req, res) => {
 			if (!user) {
 				return res.status(404).json({ message: 'User not found' });
 			}
-			return res.status(200).json({ message: 'user updated' });
+			return res.status(200).json({ message: 'user updated', user });
 		});
 	} catch (error) {
 		console.log(error);
@@ -126,3 +126,29 @@ export async function login(req, res, next) {
 			console.log(err.message);
 		});
 }
+
+// get pending  requests for trips hosted by the user
+export const getAllPendingsForUser = (req, res) => {
+	//trip id
+	try {
+		const { user_id } = req.body;
+
+		User.findOne({ _id: user_id })
+			.populate('hosted_trips')
+			.then((user) => {
+				if (user) {
+					console.log(user);
+					res.json({
+						hosted_trips: user.hosted_trips.map((trip) => {
+							return trip.passengers;
+						}),
+					});
+				}
+			})
+			.catch((err) => {
+				console.log(err.message);
+			});
+	} catch (error) {
+		console.log(error.message);
+	}
+};

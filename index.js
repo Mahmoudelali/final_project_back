@@ -14,11 +14,11 @@ const PORT = process.env.PORT || 3000;
 
 const app = new express();
 
+app.use(cors());
+
 app.use(morgan('dev'));
 
 app.use(express.json());
-
-app.use(cors());
 
 app.use(cookieParser());
 
