@@ -7,6 +7,7 @@ import {
 	getAllUsers,
 	getUserById,
 	login,
+	getAllPendingsForUser,
 } from '../controllers/user_controller.js';
 
 // get all users
@@ -23,5 +24,7 @@ router.post('/login', login);
 
 // modify user
 router.put('/update/:id', modifyUser);
+
+router.get('/pending/requests', getAllPendingsForUser);
 
 export default router;
